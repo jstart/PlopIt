@@ -2,11 +2,11 @@ import 'libraries/noble/Noble'
 
 import 'utilities/Utilities'
 
-import 'scenes/ExampleScene'
-import 'scenes/ExampleScene2'
+import 'scenes/MenuScene'
+import 'scenes/GameScene'
 
 Noble.Settings.setup({
-	Difficulty = "Medium"
+	Difficulty = "Uh Oh"
 })
 
 Noble.GameData.setup({
@@ -15,4 +15,4 @@ Noble.GameData.setup({
 
 Noble.showFPS = true
 
-Noble.new(ExampleScene, 1.5, Noble.TransitionType.CROSS_DISSOLVE)
+Noble.new(MenuScene, 1.5, Noble.TransitionType.CROSS_DISSOLVE)
