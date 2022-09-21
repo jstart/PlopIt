@@ -10,7 +10,7 @@ local sequence
 local snd = playdate.sound
 
 function newTrack(file)
-	return playdate.sound.sampleplayer.new(file)
+	return snd.fileplayer.new(file)
 end
 
 local bgMusic = newTrack('assets/sounds/puzzleitnes')
@@ -24,7 +24,8 @@ function MenuScene:init()
 
 	menu = Noble.Menu.new(false, Noble.Text.ALIGN_LEFT, false, Graphics.kColorWhite, 4,6,0, Noble.Text.FONT_LARGE)
 	Noble.Settings.resetAll()
-	menu:addItem("Play", function() Noble.transition(GameScene, 1, Noble.TransitionType.DIP_TO_BLACK) end)
+	menu:addItem("Timed Mode", function() Noble.transition(GameScene, 1, Noble.TransitionType.DIP_TO_BLACK) end)
+	menu:addItem("Marathon Mode", function() Noble.transition(MarathonScene, 1, Noble.TransitionType.DIP_TO_BLACK) end)
 	menu:addItem(
 		"Difficulty",
 		function()
@@ -73,6 +74,7 @@ end
 
 function MenuScene:start()
 	MenuScene.super.start(self)
+	bgMusic:setVolume(0.4)
 	bgMusic:play(0)
 
 	menu:activate()
