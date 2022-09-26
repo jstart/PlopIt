@@ -173,12 +173,12 @@ function GameScene:update()
 
 	Noble.Text.setFont(Noble.Text.FONT_LARGE)
 	gfx.setColor(gfx.kColorBlack);
-	gfx.setLineWidth(5)
-	if currentGoal == "Crank \nforward" or currentGoal == "Crank \nbackward" then
-		gfx.drawRoundRect(w-17, h-17, 120, 50, 15)
-	else
-		gfx.drawRoundRect(w-17, h-17, 90, 50, 15)
-	end
+	-- gfx.setLineWidth(5)
+	-- if currentGoal == "Crank \nforward" or currentGoal == "Crank \nbackward" then
+	-- 	gfx.drawRoundRect(w-17, h-17, 120, 50, 15)
+	-- else
+	-- 	gfx.drawRoundRect(w-17, h-17, 90, 50, 15)
+	-- end
 
 	Noble.Text.draw("Time: " .. tostring(math.floor(time/30)), (playdateWidth / 2) - 40, 10)
 	Noble.Text.draw("Score: " .. tostring(score), 10, 10)
