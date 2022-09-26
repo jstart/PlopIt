@@ -4,17 +4,11 @@ class("MarathonScene").extends(NobleScene)
 MarathonScene.baseColor = Graphics.kColorBlack
 
 local menuItem
-local snd = playdate.sound
 local sequence
 
-local difficultyValues = {"a", "b", "Up", "Down", "Left", "Right", "Crank \nforward", "Crank \nbackward"}
+local goals = {"a", "b", "Up", "Down", "Left", "Right", "Crank \nforward", "Crank \nbackward"}
 
 local currentTrack = 1
-
-function newTrack(file)
-	player = snd.sampleplayer.new(file)
-	return player
-end
 
 local tracks =
 {
@@ -120,10 +114,9 @@ function MarathonScene:next()
 	score += 1
 	w = 20 + math.random(1, playdateWidth - 110)
 	h = 35 + math.random(1, playdateHeight - 65)
-	local r = math.random(1, #difficultyValues)
+	local r = math.random(1, #goals)
 
-	currentGoal = difficultyValues[r]
-	-- print(currentGoal)
+	currentGoal = goals[r]
 end
 
 function MarathonScene:enter()
@@ -131,14 +124,13 @@ function MarathonScene:enter()
 
 	sequence = Sequence.new():from(0):to(100, 1.5, Ease.outBounce)
 	sequence:start();
-
 end
 
 function MarathonScene:start()
 	MarathonScene.super.start(self)
 
 	Noble.Input.setCrankIndicatorStatus(false)
-	local menu = playdate.getSystemMenu()
+	local menu = pd.getSystemMenu()
 
 	menuItem, error = menu:addMenuItem("Menu", function()
 		Noble.transition(MenuScene, 1, Noble.TransitionType.DIP_WIDGET_SATCHEL)
@@ -151,28 +143,41 @@ end
 
 function MarathonScene:drawBackground()
 	MarathonScene.super.drawBackground(self)
-
 end
 
 function MarathonScene:update()
 	MarathonScene.super.update(self)
 
 	Noble.Text.setFont(Noble.Text.FONT_LARGE)
+
+	if score > 20 then
+		Noble.Text.setFont(Noble.Text.FONT_MEDIUM)
+	end
+	if score > 40 then
+		Noble.Text.setFont(Noble.Text.FONT_SMALL)
+	end
 	Noble.Text.draw(currentGoal, w, h)
 
-	Noble.Text.draw(tostring(score), playdateWidth / 2, 10)
+	Noble.Text.setFont(Noble.Text.FONT_LARGE)
+	Noble.Text.draw("Score: " .. tostring(score), (playdateWidth / 2) - 40, 10)
 
-	playdate.graphics.setColor(playdate.graphics.kColorBlack);
-	playdate.graphics.fillRect(0, 30, playdateWidth, 5)
+	gfx.setColor(gfx.kColorBlack);
+	gfx.fillRect(0, 30, playdateWidth, 5)
+end
+
+function MarathonScene:saveHighScore()
+	currentHighScore = Noble.Settings.get("marathonHighScore")
+	Noble.Settings.set("marathonHighScore", math.max(score, currentHighScore))
 end
 
 function MarathonScene:exit()
 	MarathonScene.super.exit(self)
+	MarathonScene:saveHighScore()
 
 	Noble.Input.setCrankIndicatorStatus(false)
 	sequence = Sequence.new():from(100):to(240, 0.25, Ease.inSine)
 	sequence:start();
-	local menu = playdate.getSystemMenu()
+	local menu = pd.getSystemMenu()
 	menu:removeMenuItem(menuItem)
 end
 

@@ -1,42 +1,41 @@
 MenuScene = {}
 class("MenuScene").extends(NobleScene)
 
-MenuScene.baseColor = Graphics.kColorWhite
+MenuScene.baseColor = Graphics.kColorBlack
 
 local background
 local menu
 local sequence
 
-local snd = playdate.sound
-
 function newTrack(file)
-	return snd.fileplayer.new(file)
+	return playdate.sound.fileplayer.new(file)
 end
 
 local bgMusic = newTrack('assets/sounds/puzzleitnes')
 
-local difficultyValues = {"Wow", "Uh Oh", "*#$#%@!"}
+-- local difficultyValues = {"Wow", "Uh Oh", "*#$#%@!"}
 
 function MenuScene:init()
 	MenuScene.super.init(self)
 
 	background = Graphics.image.new("assets/images/background1")
-
+	timedTitle = "Timed Mode - High Score: " .. tostring(Noble.Settings.get("timerHighScore"))
+	marathonTitle = "Marathon Mode - High Score: " .. tostring(Noble.Settings.get("marathonHighScore"))
 	menu = Noble.Menu.new(false, Noble.Text.ALIGN_LEFT, false, Graphics.kColorWhite, 4,6,0, Noble.Text.FONT_LARGE)
-	Noble.Settings.resetAll()
-	menu:addItem("Timed Mode", function() Noble.transition(GameScene, 1, Noble.TransitionType.DIP_TO_BLACK) end)
-	menu:addItem("Marathon Mode", function() Noble.transition(MarathonScene, 1, Noble.TransitionType.DIP_TO_BLACK) end)
-	menu:addItem(
-		"Difficulty",
-		function()
-			local oldValue = Noble.Settings.get("Difficulty")
-			local newValue = math.ringInt(table.indexOfElement(difficultyValues, oldValue)+1, 1, 3)
-			Noble.Settings.set("Difficulty", difficultyValues[newValue])
-			menu:setItemDisplayName("Difficulty", "Difficulty: " .. difficultyValues[newValue])
-		end,
-		nil,
-		"Difficulty: " .. Noble.Settings.get("Difficulty")
-	)
+
+	menu:addItem(timedTitle, function() Noble.transition(GameScene, 1, Noble.TransitionType.DIP_TO_BLACK) end)
+	menu:addItem(marathonTitle, function() Noble.transition(MarathonScene, 1, Noble.TransitionType.DIP_TO_BLACK) end)
+	-- menu:addItem(
+	-- 	"Difficulty",
+	-- 	function()
+	-- 		local oldValue = Noble.Settings.get("Difficulty")
+	-- 		local newValue = math.ringInt(table.indexOfElement(difficultyValues, oldValue)+1, 1, 3)
+	-- 		Noble.Settings.set("Difficulty", difficultyValues[newValue])
+	-- 		menu:setItemDisplayName("Difficulty", "Difficulty: " .. difficultyValues[newValue])
+	-- 	end,
+	-- 	nil,
+	-- 	"Difficulty: " .. Noble.Settings.get("Difficulty")
+	-- )
 
 	local crankTick = 0
 
@@ -81,18 +80,21 @@ function MenuScene:start()
 	-- Noble.Input.setCrankIndicatorStatus(true)
 end
 
-function MenuScene:drawBackground()
-	MenuScene.super.drawBackground(self)
+-- function MenuScene:drawBackground()
+-- 	MenuScene.super.drawBackground(self)
 
-	background:draw(0, 0)
-end
+-- 	background:draw(0, 0)
+-- end
 
 function MenuScene:update()
 	MenuScene.super.update(self)
+	Noble.Text.setFont(Noble.Text.FONT_LARGE)
 
-	Graphics.setColor(Graphics.kColorBlack)
+	gfx.setColor(gfx.kColorBlack);
+	Noble.Text.draw("Plop  It", 10, 10)
+
 	Graphics.setDitherPattern(0.2, Graphics.image.kDitherTypeScreen)
-	Graphics.fillRoundRect(15, (sequence:get()*0.75)+3, 255, 125, 15)
+	Graphics.fillRoundRect(0, (sequence:get()*0.75), pd.display.getWidth(), pd.display.getHeight(), 15)
 	menu:draw(30, sequence:get()-15 or 100-15)
 
 end
