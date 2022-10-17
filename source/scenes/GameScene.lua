@@ -10,16 +10,7 @@ local delay = 30
 local gameIsOver = false
 local menuItem
 
-local goals = {"a", "b", "Up", "Down", "Left", "Right", "Crank \nforward", "Crank \nbackward"}
-
 local currentTrack = 1
-
-local tracks =
-{
-	newTrack('assets/sounds/CongaHi'),
-	newTrack('assets/sounds/CongaMid'),
-	newTrack('assets/sounds/CongaLow')
-}
 
 local w = math.random(1, playdateWidth - 130)
 local h = math.random(1, playdateHeight - 100)
@@ -31,67 +22,43 @@ function GameScene:init()
 
 	GameScene.inputHandler = {
 		upButtonDown = function()
-			if currentGoal == "Up" then
-				GameScene:next()
-			else
-				GameScene:fail()
-			end
+			GameScene:check("Up")
 		end,
 		downButtonDown = function()
-			if currentGoal == "Down" then
-				GameScene:next()
-			else
-				GameScene:fail()
-			end
+			GameScene:check("Down")
 		end,
 		leftButtonDown = function()
-			if currentGoal == "Left" then
-				GameScene:next()
-			else
-				GameScene:fail()
-			end
+			GameScene:check("Left")
 		end,
 		rightButtonDown = function()
-			if currentGoal == "Right" then
-				GameScene:next()
-			else
-				GameScene:fail()
-			end
+			GameScene:check("Right")
 		end,
 		cranked = function(change, acceleratedChange)
 			crankTick = crankTick + change
 			if (crankTick > 30) then
 				crankTick = 0
-				if currentGoal == "Crank \nforward" then
-					GameScene:next()
-				else
-					GameScene:fail()
-				end
+				GameScene:check("Crank \nforward")
 			elseif (crankTick < -30) then
 				crankTick = 0
-				if currentGoal == "Crank \nbackward" then
-					GameScene:next()
-				else
-					GameScene:fail()
-				end
+				GameScene:check("Crank \nbackward")
 			end
 		end,
 		AButtonDown = function()
-			if currentGoal == "a" then
-				GameScene:next()
-			else
-				GameScene:fail()
-			end
+			GameScene:check("a")
 		end,
 		BButtonDown = function()
-			if currentGoal == "b" then
-				GameScene:next()
-			else
-				GameScene:fail()
-			end
+			GameScene:check("b")
 		end
 	}
 
+end
+
+function GameScene:check(goal)
+	if currentGoal == goal then
+		GameScene:next()
+	else
+		GameScene:fail()
+	end
 end
 
 function GameScene:fail()
@@ -146,9 +113,9 @@ function GameScene:start()
 	menuItem, error = menu:addMenuItem("Menu", function()
 		Noble.transition(MenuScene, 1, Noble.TransitionType.DIP_WIDGET_SATCHEL)
 		gameIsOver = true
-		player = newTrack("assets/sounds/gameover")
-		player:setVolume(1.0)
-		player:play(1, 0)
+
+		gameOver:setVolume(1.0)
+		gameOver:play(1, 0)
 	end)
 end
 
@@ -210,8 +177,10 @@ function GameScene:exit()
 	Noble.Input.setCrankIndicatorStatus(false)
 	sequence = Sequence.new():from(100):to(240, 0.25, Ease.inSine)
 	sequence:start();
+
 	local menu = pd.getSystemMenu()
 	menu:removeMenuItem(menuItem)
+
 	GameScene:saveHighScore()
 end
 

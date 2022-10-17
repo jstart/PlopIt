@@ -6,16 +6,18 @@ MarathonScene.baseColor = Graphics.kColorBlack
 local menuItem
 local sequence
 
-local goals = {"a", "b", "Up", "Down", "Left", "Right", "Crank \nforward", "Crank \nbackward"}
+goals = {"a", "b", "Up", "Down", "Left", "Right", "Crank \nforward", "Crank \nbackward"}
 
 local currentTrack = 1
 
-local tracks =
+tracks =
 {
 	newTrack('assets/sounds/CongaHi'),
 	newTrack('assets/sounds/CongaMid'),
 	newTrack('assets/sounds/CongaLow')
 }
+
+gameOver = newTrack("assets/sounds/gameover")
 
 local currentGoal
 
@@ -31,67 +33,43 @@ function MarathonScene:init()
 
 	MarathonScene.inputHandler = {
 		upButtonDown = function()
-			if currentGoal == "Up" then
-				MarathonScene:next()
-			else
-				MarathonScene:fail()
-			end
+			MarathonScene:check("Up")
 		end,
 		downButtonDown = function()
-			if currentGoal == "Down" then
-				MarathonScene:next()
-			else
-				MarathonScene:fail()
-			end
+			MarathonScene:check("Down")
 		end,
 		leftButtonDown = function()
-			if currentGoal == "Left" then
-				MarathonScene:next()
-			else
-				MarathonScene:fail()
-			end
+			MarathonScene:check("Left")
 		end,
 		rightButtonDown = function()
-			if currentGoal == "Right" then
-				MarathonScene:next()
-			else
-				MarathonScene:fail()
-			end
+			MarathonScene:check("Right")
 		end,
 		cranked = function(change, acceleratedChange)
 			crankTick = crankTick + change
 			if (crankTick > 30) then
 				crankTick = 0
-				if currentGoal == "Crank \nforward" then
-					MarathonScene:next()
-				else
-					MarathonScene:fail()
-				end
+				MarathonScene:check("Crank \nforward")
 			elseif (crankTick < -30) then
 				crankTick = 0
-				if currentGoal == "Crank \nbackward" then
-					MarathonScene:next()
-				else
-					MarathonScene:fail()
-				end
+				MarathonScene:check("Crank \nbackward")
 			end
 		end,
 		AButtonDown = function()
-			if currentGoal == "a" then
-				MarathonScene:next()
-			else
-				MarathonScene:fail()
-			end
+			MarathonScene:check("a")
 		end,
 		BButtonDown = function()
-			if currentGoal == "b" then
-				MarathonScene:next()
-			else
-				MarathonScene:fail()
-			end
+			MarathonScene:check("b")
 		end
 	}
 
+end
+
+function MarathonScene:check(goal)
+	if currentGoal == goal then
+		MarathonScene:next()
+	else
+		MarathonScene:fail()
+	end
 end
 
 function MarathonScene:fail()
@@ -135,9 +113,9 @@ function MarathonScene:start()
 	menuItem, error = menu:addMenuItem("Menu", function()
 		Noble.transition(MenuScene, 1, Noble.TransitionType.DIP_WIDGET_SATCHEL)
 		gameIsOver = true
-		player = newTrack("assets/sounds/gameover")
-		player:setVolume(1.0)
-		player:play(1, 0)
+
+		gameOver:setVolume(1.0)
+		gameOver:play(1, 0)
 	end)
 end
 
@@ -172,13 +150,15 @@ end
 
 function MarathonScene:exit()
 	MarathonScene.super.exit(self)
-	MarathonScene:saveHighScore()
 
 	Noble.Input.setCrankIndicatorStatus(false)
 	sequence = Sequence.new():from(100):to(240, 0.25, Ease.inSine)
 	sequence:start();
+
 	local menu = pd.getSystemMenu()
 	menu:removeMenuItem(menuItem)
+
+	MarathonScene:saveHighScore()
 end
 
 function MarathonScene:finish()

@@ -3,7 +3,6 @@ class("MenuScene").extends(NobleScene)
 
 MenuScene.baseColor = Graphics.kColorBlack
 
-local background
 local menu
 local sequence
 
@@ -80,11 +79,6 @@ function MenuScene:start()
 	-- Noble.Input.setCrankIndicatorStatus(true)
 end
 
--- function MenuScene:drawBackground()
--- 	MenuScene.super.drawBackground(self)
-
--- 	background:draw(0, 0)
--- end
 
 function MenuScene:update()
 	MenuScene.super.update(self)
