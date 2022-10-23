@@ -156,10 +156,12 @@ function MarathonScene:update()
 	if score < 0 and gameIsOver == false then
 		gameIsOver = true
 		fail = false
-		Noble.transition(MenuScene, 1, Noble.TransitionType.DIP_WIDGET_SATCHEL)
-		player = newTrack("assets/sounds/gameover")
-		player:setVolume(1.0)
-		player:play(1, 0)
+		if not Noble.isTransitioning then
+			Noble.transition(MenuScene, 1, Noble.TransitionType.DIP_WIDGET_SATCHEL)
+			player = newTrack("assets/sounds/gameover")
+			player:setVolume(1.0)
+			player:play(1, 0)
+		end
 	end
 
 	if fail == true then

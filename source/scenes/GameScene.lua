@@ -5,7 +5,7 @@ GameScene.baseColor = Graphics.kColorBlack
 local sequence
 
 local currentGoal
-local time = 30 * 60
+local time = 30*60
 local delay = 30
 local gameIsOver = false
 local menuItem
@@ -68,6 +68,7 @@ end
 function GameScene:fail()
 	failTime = 30
 	fail = true
+	print(fail)
 	if delay > 0 then
 		print("delay catch")
 		return
@@ -113,6 +114,7 @@ function GameScene:enter()
 	score = 0
 	gameIsOver = false
 	fail = false
+	print(fail)
 	sequence = Sequence.new():from(0):to(100, 1.5, Ease.outBounce)
 	sequence:start();
 end
@@ -171,10 +173,12 @@ function GameScene:update()
 
 	if time == 0 or score < 0 and gameIsOver == false then
 		gameIsOver = true
-		Noble.transition(MenuScene, 1, Noble.TransitionType.DIP_WIDGET_SATCHEL)
-		player = newTrack("assets/sounds/gameover")
-		player:setVolume(1.0)
-		player:play(1, 0)
+		if not Noble.isTransitioning then
+			Noble.transition(MenuScene, 1, Noble.TransitionType.DIP_WIDGET_SATCHEL)
+			player = newTrack("assets/sounds/gameover")
+			player:setVolume(1.0)
+			player:play(1, 0)
+		end
 	end
 
 	time = math.max(0, time - 1)
@@ -191,7 +195,7 @@ end
 
 function GameScene:exit()
 	GameScene.super.exit(self)
-
+	fail = false
 	Noble.Input.setCrankIndicatorStatus(false)
 	sequence = Sequence.new():from(100):to(240, 0.25, Ease.inSine)
 	sequence:start();
