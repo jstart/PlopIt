@@ -4,6 +4,12 @@
 
 playdateWidth = 400
 playdateHeight = 240
+
+
+function newTrack(file)
+	return playdate.sound.fileplayer.new(file)
+end
+
 function Utilities.getZero()
 	return 0
 end

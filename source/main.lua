@@ -2,6 +2,7 @@ import 'libraries/noble/Noble'
 
 import 'utilities/Utilities'
 
+import 'scenes/SplashScene'
 import 'scenes/MenuScene'
 import 'scenes/GameScene'
 import 'scenes/MarathonScene'
@@ -12,6 +13,7 @@ gfx = pd.graphics
 Noble.Settings.setup({
 	-- Difficulty = "Uh Oh",
 	timerHighScore = 0,
+	twoHighScore = 0,
 	marathonHighScore = 0
 })
 
@@ -21,4 +23,4 @@ Noble.Settings.setup({
 
 Noble.showFPS = false
 
-Noble.new(MenuScene, 1.5, Noble.TransitionType.CROSS_DISSOLVE)
+Noble.new(SplashScene, 1.5, Noble.TransitionType.CROSS_DISSOLVE)

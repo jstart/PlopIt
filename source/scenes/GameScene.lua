@@ -16,44 +16,48 @@ local w = math.random(1, playdateWidth - 130)
 local h = math.random(1, playdateHeight - 100)
 local score = 0
 
+local fail = false
+local failTime = 0
+
 function GameScene:init()
 	GameScene.super.init(self)
 	local crankTick = 0
 
 	GameScene.inputHandler = {
+		AButtonDown = function()
+			GameScene:check(1)
+		end,
+		BButtonDown = function()
+			GameScene:check(2)
+		end,
 		upButtonDown = function()
-			GameScene:check("Up")
+			GameScene:check(3)
 		end,
 		downButtonDown = function()
-			GameScene:check("Down")
+			GameScene:check(4)
 		end,
 		leftButtonDown = function()
-			GameScene:check("Left")
+			GameScene:check(5)
 		end,
 		rightButtonDown = function()
-			GameScene:check("Right")
+			GameScene:check(6)
 		end,
 		cranked = function(change, acceleratedChange)
 			crankTick = crankTick + change
 			if (crankTick > 30) then
 				crankTick = 0
-				GameScene:check("Crank \nforward")
+				GameScene:check(7)
 			elseif (crankTick < -30) then
 				crankTick = 0
-				GameScene:check("Crank \nbackward")
+				GameScene:check(8)
 			end
-		end,
-		AButtonDown = function()
-			GameScene:check("a")
-		end,
-		BButtonDown = function()
-			GameScene:check("b")
 		end
 	}
 
 end
 
-function GameScene:check(goal)
+function GameScene:check(index)
+	local goal = goals[index]
 	if currentGoal == goal then
 		GameScene:next()
 	else
@@ -62,6 +66,8 @@ function GameScene:check(goal)
 end
 
 function GameScene:fail()
+	failTime = 30
+	fail = true
 	if delay > 0 then
 		print("delay catch")
 		return
@@ -72,6 +78,7 @@ function GameScene:fail()
 	player:setVolume(1.0)
 	player:play(1, 0)
 	time = math.max(0, time -= 30)
+	score -= 5
 end
 
 function GameScene:next()
@@ -79,6 +86,10 @@ function GameScene:next()
 
 	if currentTrack > 3 then
 		currentTrack = 1
+	end
+
+	if fail == true then
+		return
 	end
 
 	player = tracks[currentTrack]
@@ -100,6 +111,8 @@ function GameScene:enter()
 
 	GameScene:next()
 	score = 0
+	gameIsOver = false
+	fail = false
 	sequence = Sequence.new():from(0):to(100, 1.5, Ease.outBounce)
 	sequence:start();
 end
@@ -121,21 +134,25 @@ end
 
 function GameScene:drawBackground()
 	GameScene.super.drawBackground(self)
-
 end
 
 function GameScene:update()
 	GameScene.super.update(self)
 	Noble.Text.setFont(Noble.Text.FONT_LARGE)
 
-	if score > 20 then
-		Noble.Text.setFont(Noble.Text.FONT_MEDIUM)
-	end
-	if score > 40 then
-		Noble.Text.setFont(Noble.Text.FONT_SMALL)
-	end
+	-- if score > 20 then
+	-- 	Noble.Text.setFont(Noble.Text.FONT_MEDIUM)
+	-- end
+	-- if score > 40 then
+	-- 	Noble.Text.setFont(Noble.Text.FONT_SMALL)
+	-- end
 
 	gfx.setColor(gfx.kColorWhite);
+	if fail == true then
+		Noble.Text.draw("OOPS", (playdateWidth / 2), (playdateHeight / 2))
+	else
+		Noble.Text.draw(currentGoal, w, h)
+	end
 	Noble.Text.draw(currentGoal, w, h)
 
 	Noble.Text.setFont(Noble.Text.FONT_LARGE)
@@ -151,19 +168,21 @@ function GameScene:update()
 	Noble.Text.draw("Score: " .. tostring(score), 10, 10)
 
 	gfx.fillRect(0, 30, playdateWidth, 5)
-	print(time)
-	if time == 0 and gameIsOver == false then
+
+	print(score, gameIsOver)
+	if time == 0 or score < 0 and gameIsOver == false then
 		gameIsOver = true
+		Noble.transition(MenuScene, 1, Noble.TransitionType.DIP_WIDGET_SATCHEL)
 		player = newTrack("assets/sounds/gameover")
 		player:setVolume(1.0)
 		player:play(1, 0)
-		print("return to menu")
-		Noble.transition(MenuScene, 1, Noble.TransitionType.DIP_WIDGET_SATCHEL)
-		return
 	end
 
 	time = math.max(0, time - 1)
 	delay = math.max(0, delay - 1)
+
+	failTime = math.max(0, failTime - 1)
+	fail = failTime > 0
 end
 
 function GameScene:saveHighScore()
