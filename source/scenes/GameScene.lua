@@ -165,11 +165,10 @@ function GameScene:update()
 	-- end
 
 	Noble.Text.draw("Time: " .. tostring(math.floor(time/30)), (playdateWidth / 2) - 40, 10)
-	Noble.Text.draw("Score: " .. tostring(score), 10, 10)
+	Noble.Text.draw("Score: " .. tostring(math.max(0, score)), 10, 10)
 
 	gfx.fillRect(0, 30, playdateWidth, 5)
 
-	print(score, gameIsOver)
 	if time == 0 or score < 0 and gameIsOver == false then
 		gameIsOver = true
 		Noble.transition(MenuScene, 1, Noble.TransitionType.DIP_WIDGET_SATCHEL)

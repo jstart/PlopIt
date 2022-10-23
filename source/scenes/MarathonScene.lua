@@ -28,6 +28,7 @@ local w = math.random(1, playdateWidth - 130)
 local h = math.random(1, playdateHeight - 100)
 local score = 0
 
+local gameIsOver = false
 local fail = false
 local failTime = 0
 
@@ -85,7 +86,7 @@ function MarathonScene:fail()
 	player = newTrack('assets/sounds/fail')
 	player:setVolume(1.0)
 	player:play(1, 0)
-	score = math.max(0, score -= 5)
+	score = score -= 5
 end
 
 function MarathonScene:next()
@@ -112,6 +113,10 @@ end
 
 function MarathonScene:enter()
 	MarathonScene.super.enter(self)
+
+	score = 0
+	gameIsOver = false
+	fail = false
 
 	sequence = Sequence.new():from(0):to(100, 1.5, Ease.outBounce)
 	sequence:start();
@@ -147,6 +152,16 @@ function MarathonScene:update()
 	-- 	Noble.Text.setFont(Noble.Text.FONT_SMALL)
 	-- end
 
+	print(score, gameIsOver)
+	if score < 0 and gameIsOver == false then
+		gameIsOver = true
+		fail = false
+		Noble.transition(MenuScene, 1, Noble.TransitionType.DIP_WIDGET_SATCHEL)
+		player = newTrack("assets/sounds/gameover")
+		player:setVolume(1.0)
+		player:play(1, 0)
+	end
+
 	if fail == true then
 		Noble.Text.draw("OOPS", (playdateWidth / 2), (playdateHeight / 2))
 	else
@@ -154,7 +169,7 @@ function MarathonScene:update()
 	end
 
 	Noble.Text.setFont(Noble.Text.FONT_LARGE)
-	Noble.Text.draw("Score: " .. tostring(score), (playdateWidth / 2) - 40, 10)
+	Noble.Text.draw("Score: " .. tostring(math.max(0, score)), (playdateWidth / 2) - 40, 10)
 
 	gfx.setColor(gfx.kColorBlack);
 	gfx.fillRect(0, 30, playdateWidth, 5)
