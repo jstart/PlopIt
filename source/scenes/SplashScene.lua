@@ -4,6 +4,9 @@ class("SplashScene").extends(NobleScene)
 SplashScene.baseColor = Graphics.kColorBlack
 
 bgMusic = newTrack('assets/sounds/puzzleitnes')
+bopIt = newTrack('assets/sounds/Bop')
+banter = newTrack('assets/sounds/Banter_16')
+tutorialBanter = newTrack('assets/sounds/Banter_56')
 
 function SplashScene:init()
 	SplashScene.super.init(self)
@@ -26,27 +29,35 @@ function SplashScene:start()
 	SplashScene.super.start(self)
 	bgMusic:setVolume(0.4)
 	bgMusic:play(0)
+	
+	bopIt:setVolume(0.6)
+	bopIt:play(1)
+	-- bopIt:setFinishCallback(nextSound)
 end
 
+function nextSound(...)
+	
+	bopIt:setFinishCallback(nil)
+end
 
 function SplashScene:update()
 	SplashScene.super.update(self)
 
-	background = playdate.graphics.image.new("assets/images/logo.png")
+	local background = gfx.image.new("assets/images/logo.png")
 	background:drawCentered(playdateWidth/2,playdateHeight/2)
 
-	playdate.graphics.setColor(Graphics.kColorBlack)
-	playdate.graphics.setPattern({0xFF, 0xFF, 0xF7, 0xEF, 0xDF, 0xBF, 0x7F, 0xFF})
-	playdate.graphics.drawRect(0,0,playdateWidth, playdateHeight)
+	gfx.setColor(Graphics.kColorBlack)
+	gfx.setPattern({0xFF, 0xFF, 0xF7, 0xEF, 0xDF, 0xBF, 0x7F, 0xFF})
+	gfx.drawRect(0,0,playdateWidth, playdateHeight)
 	Noble.Text.setFont(Noble.Text.FONT_LARGE)
 
 	gfx.setColor(gfx.kColorBlack);
-	Noble.Text.draw("Press A", 10, playdateHeight - 50)
+	Noble.Text.draw("Press Ⓐ", 10, playdateHeight - 50)
 end
 
 function SplashScene:exit()
 	SplashScene.super.exit(self)
-
+	bopIt:setVolume(0)
 	sequence = Sequence.new():from(100):to(240, 0.25, Ease.inSine)
 	sequence:start();
 end

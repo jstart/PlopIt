@@ -5,16 +5,19 @@ import 'utilities/Utilities'
 import 'scenes/SplashScene'
 import 'scenes/MenuScene'
 import 'scenes/GameScene'
-import 'scenes/MarathonScene'
+import 'scenes/TutorialScene'
 
 pd = playdate
 gfx = pd.graphics
 
 Noble.Settings.setup({
 	-- Difficulty = "Uh Oh",
-	timerHighScore = 0,
-	twoHighScore = 0,
-	marathonHighScore = 0
+	singlePlayerHighScore = 0,
+	twoPlayerHighScore = 0,
+	perfectHighScore = 0,
+	singlePlayerTutorial = false,
+	twoPlayerTutorial = false,
+	perfectTutorial = false
 })
 
 -- Noble.GameData.setup({

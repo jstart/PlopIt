@@ -3,25 +3,26 @@ class("MenuScene").extends(NobleScene)
 
 MenuScene.baseColor = Graphics.kColorBlack
 
+gameMode = ""
 local menu
 local sequence
 
 -- local difficultyValues = {"Wow", "Uh Oh", "*#$#%@!"}
 local x = 0
-local y = 150
 local right = true
 
 function MenuScene:init()
 	MenuScene.super.init(self)
 
-	local timedTitle = "Timed Mode - High Score: " .. tostring(Noble.Settings.get("timerHighScore"))
-	-- local twoPlayerTitle = "2 Player - High Score: " .. tostring(Noble.Settings.get("twoHighScore"))
-	local marathonTitle = "Marathon Mode - High Score: " .. tostring(Noble.Settings.get("marathonHighScore"))
+	local timedTitle = "Single Player - High Score: " .. tostring(Noble.Settings.get("singlePlayerHighScore"))
+	local twoPlayerTitle = "2 Player - High Score: " .. tostring(Noble.Settings.get("twoPlayerHighScore"))
+	local perfectTitle = "PERFECT Mode - High Score: " .. tostring(Noble.Settings.get("perfectHighScore"))
 	menu = Noble.Menu.new(false, Noble.Text.ALIGN_LEFT, false, Graphics.kColorWhite, 4,6,0, Noble.Text.FONT_LARGE)
 
-	menu:addItem(timedTitle, function() Noble.transition(GameScene, 1, Noble.TransitionType.DIP_TO_BLACK) end)
-	-- menu:addItem(twoPlayerTitle, function() Noble.transition(GameScene, 1, Noble.TransitionType.DIP_TO_BLACK) end)
-	menu:addItem(marathonTitle, function() Noble.transition(MarathonScene, 1, Noble.TransitionType.DIP_TO_BLACK) end)
+	menu:addItem(timedTitle, function() MenuScene:startTimed() end)
+	menu:addItem(twoPlayerTitle, function() MenuScene:startTwoPlayer() end)
+	menu:addItem(perfectTitle, function() MenuScene:startPerfect() end)
+
 	-- menu:addItem(
 	-- 	"Difficulty",
 	-- 	function()
@@ -64,6 +65,8 @@ function MenuScene:enter()
 
 	sequence = Sequence.new():from(0):to(200, 1.0, Ease.outBounce)
 	sequence:start();
+	banter:setVolume(0.6)
+	banter:play(1)
 end
 
 function MenuScene:start()
@@ -73,25 +76,46 @@ function MenuScene:start()
 	end
 
 	menu:activate()
-	-- Noble.Input.setCrankIndicatorStatus(true)
 end
 
+function MenuScene:startTimed()
+	gameMode = "singlePlayer"
+	local tutorialSeen = Noble.Settings.get(gameMode.."Tutorial")
+
+	if not tutorialSeen then 
+		Noble.transition(TutorialScene, 1, Noble.TransitionType.DIP_TO_BLACK)
+		return 
+	end
+	Noble.transition(GameScene, 1, Noble.TransitionType.DIP_TO_BLACK)
+end
+
+function MenuScene:startTwoPlayer()
+	gameMode = "twoPlayer"
+	local tutorialSeen = Noble.Settings.get(gameMode.."Tutorial")
+
+	if not tutorialSeen then 
+		Noble.transition(TutorialScene, 1, Noble.TransitionType.DIP_TO_BLACK)
+		return 
+	end
+	Noble.transition(GameScene, 1, Noble.TransitionType.DIP_TO_BLACK)
+end
+
+function MenuScene:startPerfect()
+	gameMode = "perfect"
+	local tutorialSeen = Noble.Settings.get(gameMode.."Tutorial")
+
+	if not tutorialSeen then 
+		Noble.transition(TutorialScene, 1, Noble.TransitionType.DIP_TO_BLACK)
+		return 
+	end
+	Noble.transition(GameScene, 1, Noble.TransitionType.DIP_TO_BLACK)
+end
 
 function MenuScene:update()
 	MenuScene.super.update(self)
-	-- Noble.Text.setFont(Noble.Text.FONT_LARGE)
-
-	-- gfx.setColor(gfx.kColorBlack);
-	-- Noble.Text.draw("Plop  It", 10, 10)
 	-- Graphics.setDitherPattern(0.2, Graphics.image.kDitherTypeScreen)
 	Graphics.fillRoundRect(0, (sequence:get()*0.75), pd.display.getWidth(), pd.display.getHeight(), 15)
-	menu:draw(30, sequence:get()-15 or 100-15)
-
-	for col=1,18 do
-		for row=1,12 do
-			-- playdate.graphics.drawRect(0+(col*20),50 + y,15,15)
-		end
-	end
+	menu:draw(30, sequence:get()-30 or 80-15)
 
 	for row=1,6 do
 		rectY = math.max((row*20),10)
